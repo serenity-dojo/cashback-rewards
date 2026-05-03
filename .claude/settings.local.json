@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./mvnw -Dtest='BasicCashbackCalculationIT#earnsCashbackAtPartnerMerchant' test)",
+      "Bash(./mvnw test-compile *)",
+      "Bash(./mvnw failsafe:integration-test -Dit.test='BasicCashbackCalculationIT')",
+      "Bash(./mvnw verify *)",
+      "Bash(./mvnw -Dtest='InMemoryMerchantRepositoryTest' test)",
+      "Bash(./mvnw test *)",
+      "Bash(./mvnw -Dtest='RegisterMerchantServiceTest' test)",
+      "Bash(./mvnw -Dtest='MerchantControllerTest' test)",
+      "Bash(./mvnw -Dtest='PurchaseControllerTest' test)",
+      "Bash(./mvnw -Dtest='InMemoryCashbackRepositoryTest' test)",
+      "Bash(./mvnw -Dtest='RecordPurchaseServiceTest' test)",
+      "Bash(./mvnw -Dtest='ListCustomerCashbackServiceTest' test)",
+      "Bash(./mvnw -Dtest='CashbackControllerTest' test)",
+      "Bash(./mvnw '-Dtest=BasicCashbackCalculationIT$CalculatesCashbackAsRateTimesPurchaseAmount' test)",
+      "Bash(./mvnw '-Dtest=BasicCashbackCalculationIT$UsesRateEffectiveAtPurchaseTimestamp' test)",
+      "Bash(./mvnw -Dtest='CashbackRateScheduleTest' test)",
+      "Bash(./mvnw -Dtest='*IT' test)",
+      "Bash(git stash *)",
+      "Bash(./mvnw -Dtest='MerchantTest' test)",
+      "Bash(./mvnw -Dtest='UpdateMerchantCashbackRateServiceTest' test)",
+      "Bash(git fsck *)"
+    ]
+  }
+}
