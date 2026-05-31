@@ -65,27 +65,3 @@ Run ALL tests. STOP after each cycle.
 
 Step 4: Review — Verify coverage, boundaries, no AI smells.
 Update CLAUDE.md if new conventions emerged.
-
-## Testing Standards
-
-Acceptance tests live in .../acceptance/, unit tests beside their production code.
-Domain tests: plain JUnit + AssertJ, NO Spring.
-Repository tests: @DataJpaTest.
-Web tests: @WebMvcTest.
-Acceptance tests: @SpringBootTest + MockMvc.
-For money: isEqualByComparingTo("1.60").
-Inline test data per test. No shared fixtures.
-
-## Architecture: Hexagonal (Ports & Adapters)
-Domain (domain/): Pure Java. NO Spring, NO framework dependencies.
-    model/ — entities and value objects
-    service/ — business rules
-Application (application/): port/in/ and port/out/ interfaces.
-    @Service orchestration only — no business logic here.
-Adapters: 
-    adapter/in/web/ — @RestController, DTOs only.
-    adapter/out/persistence/ — JPA repos and entities (NOT in domain).
-
-Domain NEVER imports org.springframework or jakarta.persistence.
-Controllers NEVER contain business logic.
-Dependencies flow inward: adapter → application → domain.
