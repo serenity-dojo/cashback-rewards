@@ -1,0 +1,15 @@
+spring:
+  # Tests run against H2 in PostgreSQL compatibility mode so the same Flyway
+  # migrations and JPA mappings exercised in production are exercised here too.
+  # (Testcontainers + real PostgreSQL is preferable per the persistence rules,
+  #  but the Docker daemon is unavailable in this environment.)
+  datasource:
+    url: jdbc:h2:mem:cashback;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true

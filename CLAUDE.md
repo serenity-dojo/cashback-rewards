@@ -9,14 +9,32 @@ SpringBoot microservice implementing a Cashback Rewards solution.
 Uses the Maven wrapper; Java 25 required (see `pom.xml` `<java.version>`).
 
 ```bash
-./mvnw spring-boot:run           # run the app
-./mvnw test                      # run all tests
+./mvnw spring-boot:run           # run the app (needs a PostgreSQL instance — see below)
+./mvnw test                      # run unit tests (use H2 in PostgreSQL mode)
+./mvnw verify                    # run unit + acceptance (*IT) tests
 ./mvnw -Dtest=ClassName test     # run a single test class
 ./mvnw -Dtest=ClassName#method test   # run a single test method
 ./mvnw clean package             # build the jar
 ```
 
-Stack: `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`, H2 (runtime). No explicit datasource config — Spring Boot auto-configures an in-memory H2 via `application.yaml`.
+Stack: `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`, Flyway, PostgreSQL driver (runtime), H2 (test).
+
+### Database
+Production persistence is PostgreSQL. The schema is owned by Flyway migrations in
+`src/main/resources/db/migration` (`V<n>__description.sql`); Hibernate is `ddl-auto: validate`
+and never generates schema. Connection is configured in `src/main/resources/application.yaml`
+and overridable via `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` env vars.
+
+To run locally, start a PostgreSQL instance, e.g.:
+```bash
+docker run --name cashback-pg -e POSTGRES_DB=cashback_rewards \
+  -e POSTGRES_USER=cashback -e POSTGRES_PASSWORD=cashback -p 5432:5432 -d postgres:17
+```
+
+Tests run against H2 in PostgreSQL compatibility mode (`src/test/resources/application.yaml`),
+so the same Flyway migrations and JPA mappings are exercised without Docker. The persistence
+rules call for Testcontainers + real PostgreSQL; switch the test datasource over once a Docker
+daemon is available.
 
 ## Coding Conventions
 
