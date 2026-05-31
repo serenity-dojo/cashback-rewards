@@ -1,0 +1,418 @@
+openapi: 3.0.3
+info:
+  title: Cashback Rewards API
+  description: |
+    REST API for the Cashback Rewards service.
+
+    Monetary values use `type: string, format: decimal` to preserve
+    `BigDecimal` precision over the wire — clients MUST treat them as
+    decimals, never as IEEE-754 floats.
+  version: 0.1.0
+
+servers:
+  - url: /api
+    description: Default base path
+
+tags:
+  - name: Cashback
+    description: Customer cashback events and reports
+  - name: Purchases
+    description: Recording purchase events
+  - name: Merchants
+    description: Partner merchant registration
+  - name: Categories
+    description: Product category configuration and default cashback rate
+  - name: Products
+    description: Per-product cashback totals
+
+paths:
+
+  /customers/{customerId}/cashback:
+    get:
+      tags: [Cashback]
+      summary: List a customer's cashback entries
+      description: Returns every cashback event recorded for the customer.
+      operationId: listCustomerCashback
+      parameters:
+        - $ref: '#/components/parameters/CustomerId'
+      responses:
+        '200':
+          description: Cashback entries for the customer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CashbackResponse'
+
+  /customers/{customerId}/cashback/reports/{yearMonth}:
+    get:
+      tags: [Cashback]
+      summary: Get the customer's cashback report for a single calendar month
+      description: |
+        Returns the cashback report for the requested month, evaluated in the
+        member's local timezone. A transaction posted at 23:59 local on the
+        last day of the month belongs to that month even if the UTC instant
+        has rolled into the following month.
+
+        Refund clawbacks appear as negative line entries in the month they
+        actually occurred — even if the original earning was in a different
+        month.
+
+        Non-qualifying purchases (e.g. gift cards) earned no cashback and do
+        not appear in the report.
+
+        The report MUST belong to the requesting member; cross-member access
+        is rejected with `403`.
+
+        If the member had no qualifying activity in the month, the response
+        is a successful empty report with `total = 0.00`.
+      operationId: getMonthlyCashbackReport
+      parameters:
+        - $ref: '#/components/parameters/CustomerId'
+        - name: yearMonth
+          in: path
+          required: true
+          description: Calendar month in ISO-8601 `YYYY-MM` form, in the member's local timezone.
+          schema:
+            type: string
+            pattern: '^\d{4}-(0[1-9]|1[0-2])$'
+            example: '2026-03'
+      responses:
+        '200':
+          description: Monthly cashback report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MonthlyCashbackReport'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '403':
+          description: The caller is not the owner of the requested report
+        '404':
+          description: Customer not found
+
+  /products/{productCategory}/cashback-total:
+    get:
+      tags: [Products]
+      summary: Total cashback paid for a product
+      description: |
+        Returns the total cashback paid for a product category, summed across
+        every customer, together with the number of cashback payments counted.
+
+        The product is identified by its category name (e.g. `Groceries`).
+        A product with no cashback records — including a name that was never
+        registered as a category — is not an error: the response is `200` with
+        `totalCashback = 0.00` and `recordCount = 0`.
+      operationId: totalProductCashback
+      parameters:
+        - name: productCategory
+          in: path
+          required: true
+          description: Product category name. URL-encode names containing spaces.
+          schema:
+            type: string
+            minLength: 1
+          example: 'Groceries'
+      responses:
+        '200':
+          description: Total cashback paid for the product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCashbackTotal'
+
+  /purchases:
+    post:
+      tags: [Purchases]
+      summary: Record a purchase
+      operationId: recordPurchase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseRequest'
+      responses:
+        '201':
+          description: Purchase recorded
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /merchants:
+    post:
+      tags: [Merchants]
+      summary: Register a partner merchant
+      operationId: registerMerchant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MerchantRequest'
+      responses:
+        '201':
+          description: Merchant registered
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /categories:
+    post:
+      tags: [Categories]
+      summary: Register a product category for an MCC
+      description: |
+        Registers a product category keyed by Merchant Category Code (MCC) and
+        its cashback rate. A purchase whose MCC matches a registered category
+        earns cashback at that category's rate.
+      operationId: registerCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+      responses:
+        '201':
+          description: Product category registered
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /categories/default-rate:
+    put:
+      tags: [Categories]
+      summary: Configure the fallback cashback rate for unmapped MCCs
+      description: |
+        Sets the cashback rate applied to a purchase whose MCC is not assigned
+        to any registered product category. Such a purchase is reported under
+        the synthetic "Other" category.
+      operationId: configureDefaultRate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DefaultRateRequest'
+      responses:
+        '204':
+          description: Default rate updated
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+components:
+
+  parameters:
+    CustomerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+
+  responses:
+    ValidationError:
+      description: Request failed validation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationProblem'
+
+  schemas:
+
+    Money:
+      type: string
+      format: decimal
+      description: |
+        Monetary amount as a decimal string with up to 2 fractional digits.
+        Cashback values use `RoundingMode.DOWN` at scale 2.
+        May be negative (e.g. clawback line entries, net negative monthly totals).
+      pattern: '^-?\d+(\.\d{1,2})?$'
+      example: '12.40'
+
+    Rate:
+      type: string
+      format: decimal
+      description: |
+        Cashback rate as a decimal fraction (e.g. `0.05` = 5%). At most two
+        decimal places of percent — i.e. four decimal places of fraction.
+      pattern: '^\d+(\.\d{1,4})?$'
+      example: '0.05'
+
+    CashbackResponse:
+      type: object
+      required: [merchantName, productCategory, cashbackAmount]
+      properties:
+        merchantName:
+          type: string
+        productCategory:
+          type: string
+          description: |
+            Name of the product category that earned the cashback. Unmapped
+            MCCs are reported as `Other`.
+          example: 'Groceries'
+        cashbackAmount:
+          $ref: '#/components/schemas/Money'
+
+    ProductCashbackTotal:
+      type: object
+      required: [product, totalCashback, recordCount]
+      properties:
+        product:
+          type: string
+          description: Product category name the total was computed for.
+          example: 'Groceries'
+        totalCashback:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: |
+            Total cashback paid for the product across all customers, in whole
+            cents (scale 2). `0.00` when no cashback has been paid.
+        recordCount:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Number of cashback payments included in the total.
+          example: 2
+
+    CashbackEntry:
+      type: object
+      description: |
+        A single line in a monthly report. Earnings are positive; clawbacks
+        from refunds are negative.
+      required: [postedAt, merchantName, purchaseAmount, cashbackAmount, type]
+      properties:
+        postedAt:
+          type: string
+          format: date-time
+          description: Instant the cashback event posted.
+        merchantName:
+          type: string
+        purchaseAmount:
+          $ref: '#/components/schemas/Money'
+        cashbackAmount:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Positive for earnings, negative for clawbacks.
+        type:
+          type: string
+          enum: [EARNING, CLAWBACK]
+
+    CapStatus:
+      type: object
+      description: |
+        Present only when the monthly cap was reached during the month.
+        Absent when the cap was never approached.
+      required: [capAmount, forfeitedAmount]
+      properties:
+        capAmount:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: The monthly cap value applicable to the member (e.g. `50.00`).
+        forfeitedAmount:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Cashback that would have been earned but was forfeited because the cap was hit.
+
+    MonthlyCashbackReport:
+      type: object
+      required: [customerId, yearMonth, timezone, entries, total]
+      properties:
+        customerId:
+          type: string
+        yearMonth:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])$'
+          example: '2026-03'
+        timezone:
+          type: string
+          description: IANA zone applied to the month boundaries.
+          example: 'Pacific/Auckland'
+        entries:
+          type: array
+          description: |
+            Every cashback event posted in the month, including negative
+            clawback entries. Empty when there was no qualifying activity.
+          items:
+            $ref: '#/components/schemas/CashbackEntry'
+        total:
+          allOf:
+            - $ref: '#/components/schemas/Money'
+          description: Net sum of all entries. May be negative.
+        cap:
+          $ref: '#/components/schemas/CapStatus'
+
+    PurchaseRequest:
+      type: object
+      required: [customerId, merchantName, mcc, amount, purchasedAt]
+      properties:
+        customerId:
+          type: string
+          minLength: 1
+        merchantName:
+          type: string
+          minLength: 1
+        mcc:
+          type: string
+          minLength: 1
+          description: |
+            Merchant Category Code identifying the product category of the
+            purchase. The cashback rate is derived from this MCC, not from
+            the merchant. An MCC that is not assigned to any registered
+            category falls back to the configured default rate.
+          example: '5411'
+        amount:
+          $ref: '#/components/schemas/Money'
+        purchasedAt:
+          type: string
+          format: date-time
+
+    MerchantRequest:
+      type: object
+      required: [name, partner]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        partner:
+          type: boolean
+          description: |
+            Whether the merchant is enrolled in the cashback program. Only
+            purchases at partner merchants earn cashback.
+
+    CategoryRequest:
+      type: object
+      required: [mcc, name, cashbackRate]
+      properties:
+        mcc:
+          type: string
+          minLength: 1
+          description: Merchant Category Code identifying the product category.
+          example: '5411'
+        name:
+          type: string
+          minLength: 1
+          example: 'Groceries'
+        cashbackRate:
+          $ref: '#/components/schemas/Rate'
+
+    DefaultRateRequest:
+      type: object
+      required: [cashbackRate]
+      properties:
+        cashbackRate:
+          $ref: '#/components/schemas/Rate'
+
+    ValidationProblem:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
