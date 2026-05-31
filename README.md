@@ -2,11 +2,11 @@
 
 **Learn to build production-quality Spring Boot APIs using AI as your pair programmer.**
 
-This is the hands-on project for the [Spec-Driven Development and TDD with AI](https://www.udemy.com/course/spring-boot-ai-tdd) Udemy course. You'll write feature specifications using Example Mapping, generate acceptance tests from those specs, and build the implementation using a TDD workflow — all driven by Claude Code.
+This is the hands-on project for the [Spec-Driven Development and TDD with AI](https://bit.ly/spec-driven-development-in-java) Udemy course. You'll write feature specifications using Example Mapping, generate acceptance tests from those specs, and build the implementation using a TDD workflow — all driven by Claude Code.
 
 By the end of the course you'll have built a complete cashback rewards API with hexagonal architecture, comprehensive test coverage, and a repeatable AI-assisted development process you can apply to any project.
 
-**[Enrol in the course on Udemy →](https://www.udemy.com/course/spring-boot-ai-tdd)**
+**[Enrol in the course on Udemy →](https://bit.ly/spec-driven-development-in-java)**
 
 ---
 
@@ -200,8 +200,8 @@ claude                                   # Start a Claude Code session
 
 ## About the Course
 
-**[Spec-Driven Development and TDD with AI](https://www.udemy.com/course/spring-boot-ai-tdd** teaches you to build production-ready Spring Boot APIs using Claude Code as your AI pair programmer. You'll learn a complete workflow: discover requirements with Example Mapping, write specifications, generate tests, and build features using TDD — all with AI assistance that's configured to follow your project's architecture and conventions.
+**[Spec-Driven Development and TDD with AI](https://bit.ly/spec-driven-development-in-java)** teaches you to build production-ready Spring Boot APIs using Claude Code as your AI pair programmer. You'll learn a complete workflow: discover requirements with Example Mapping, write specifications, generate tests, and build features using TDD — all with AI assistance that's configured to follow your project's architecture and conventions.
 
 The course is designed for Java developers who want to use AI effectively — not as a code generator, but as a disciplined development partner.
 
-**[Enrol on Udemy →](https://www.udemy.com/course/spring-boot-ai-tdd/?referralCode=3170E302C61D48703A94)** · Built by [Serenity Dojo](https://www.serenity-dojo.com/)
+**[Enrol on Udemy →](https://bit.ly/spec-driven-development-in-java)** · Built by [Serenity Dojo](https://www.serenity-dojo.com/)
