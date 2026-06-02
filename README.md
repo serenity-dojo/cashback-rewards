@@ -2,7 +2,7 @@
 
 **Learn to build production-quality Spring Boot APIs using AI as your pair programmer.**
 
-This is the hands-on project for the [Spec-Driven Development and TDD with AI](https://bit.ly/spec-driven-development-in-java) Udemy course. You'll write feature specifications using Example Mapping, generate acceptance tests from those specs, and build the implementation using a TDD workflow — all driven by Claude Code.
+This is the hands-on project for the **[Spec-Driven Development and TDD with AI](https://bit.ly/spec-driven-development-in-java) Udemy course**. Check it out, it's awesome :-). You'll write feature specifications using Example Mapping, generate acceptance tests from those specs, and build the implementation using a TDD workflow — all driven by Claude Code.
 
 By the end of the course you'll have built a complete cashback rewards API with hexagonal architecture, comprehensive test coverage, and a repeatable AI-assisted development process you can apply to any project.
 
