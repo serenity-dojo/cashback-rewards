@@ -1,10 +1,25 @@
 # Cashback Rewards
 
-**Learn to build production-quality Spring Boot APIs using AI as your pair programmer.**
+**A hands-on Spring Boot project showing how to use AI, Example Mapping, acceptance tests and TDD to build APIs in a more disciplined way.**
 
-This is the hands-on project for the **[Spec-Driven Development and TDD with AI](https://bit.ly/spec-driven-development-in-java) Udemy course**. Check it out, it's awesome :-). You'll write feature specifications using Example Mapping, generate acceptance tests from those specs, and build the implementation using a TDD workflow — all driven by Claude Code.
+Most AI coding examples start with the code.
 
-By the end of the course you'll have built a complete cashback rewards API with hexagonal architecture, comprehensive test coverage, and a repeatable AI-assisted development process you can apply to any project.
+This project starts with the requirements.
+
+The idea is simple: AI is much better at implementing requirements than discovering them by itself. So instead of asking Claude Code to “build a cashback rewards API”, we use a more structured workflow:
+
+1. **Discover** the rules, examples, edge cases, assumptions, and open questions.
+2. **Acceptance** — turn those examples into executable acceptance tests.
+3. **TDD** — drive the implementation through red-green-refactor cycles.
+4. **Review** — check the result beyond the passing tests.
+
+The sample application is a cashback rewards API built with Spring Boot, hexagonal architecture, comprehensive test coverage, and Claude Code commands that guide each step of the workflow.
+
+This repo is also the hands-on project for the Serenity Dojo Udemy course:
+
+**[Spec-Driven Development and TDD with AI](https://bit.ly/spec-driven-development-in-java)**
+
+The full course walks through the process step by step, but the repository is open so you can explore the approach, inspect the specs, and see how the workflow is put together.
 
 **[Enrol in the course on Udemy →](https://bit.ly/spec-driven-development-in-java)**
 
@@ -12,13 +27,15 @@ By the end of the course you'll have built a complete cashback rewards API with 
 
 ## What You'll Build
 
-A Spring Boot microservice that calculates cashback rewards for customer purchases at partner merchants. Along the way, you'll learn to:
+A Spring Boot microservice that calculates cashback rewards for customer purchases at partner merchants.
+
+Along the way, you'll learn to:
 
 - **Discover requirements with AI** — use Example Mapping and a custom `/discover` command to turn user stories into precise specifications with rules, examples, and counter-examples
-- **Drive development with specs** — write acceptance tests directly from specs, then implement features using red-green-refactor TDD cycles
-- **Configure Claude Code for your project** — set up CLAUDE.md, path-scoped architecture rules, and custom commands that make Claude a project-aware pair programmer
+- **Drive development with acceptance tests** — write acceptance tests directly from specs, then implement features using red-green-refactor TDD cycles
+- **Configure Claude Code for your project** — set up `CLAUDE.md`, path-scoped architecture rules, and custom commands that make Claude a project-aware pair programmer
 - **Enforce architecture automatically** — use rules files and hooks to guarantee hexagonal architecture compliance, not just suggest it
-- **Build with confidence** — every feature is backed by acceptance tests, domain unit tests, controller tests, and repository tests
+- **Build with confidence** — every feature is backed by acceptance tests, domain unit tests, controller tests, application tests, and repository tests
 
 ## Prerequisites
 
@@ -48,16 +65,18 @@ If the tests pass, you're ready to go.
 
 ## Branch Map
 
-Each course section has a **start** branch (where you begin working) and a **solution** branch (the completed code). Check out the start branch, follow along with the videos, and compare your work against the solution when you're done.
+Each course section has a **start** branch, where you begin working, and a **solution** branch, with the completed code.
+
+Check out the start branch, follow along with the videos, and compare your work against the solution when you're done.
 
 Sections 1–3 are theory and slides — no code branches needed. Hands-on coding starts at Section 4.
 
 | Course Section | Branches | What's Introduced |
 |---|---|---|
 | **Section 4 — AI-Driven Requirements Discovery** | `section-4/start` · `section-4/solution` | The custom `/discover` command. Using Example Mapping with AI to write feature specifications. |
-| **Section 5 — The CLAUDE.md File** | `section-5/start` · `section-5/solution` | The CLAUDE.md instruction file. Build commands, coding conventions, architecture rules, and the development process. |
+| **Section 5 — The CLAUDE.md File** | `section-5/start` · `section-5/solution` | The `CLAUDE.md` instruction file. Build commands, coding conventions, architecture rules, and the development process. |
 | **Section 6 — Automating Architecture Rules** | `section-6/start` · `section-6/solution` | Path-scoped rules in `.claude/rules/`. Domain rules, persistence rules, test rules, and web rules. |
-| **Section 7 — TDD with AI** | `section-7/start` · `section-7/solution` | The `/accept`, `/tdd`, and `/review` commands. Full TDD cycle: acceptance tests, inner-loop red-green-refactor, and code review. |
+| **Section 7 — TDD with AI** | `section-7/start` · `section-7/solution` | The `/acceptance`, `/tdd`, and `/review` commands. Full TDD cycle: acceptance tests, inner-loop red-green-refactor, and code review. |
 | **Section 8 — API Contracts** | `section-8/start` · `section-8/solution` | OpenAPI contract-driven development. Defining the API contract first, then implementing against it. |
 | **Section 9 — Refactoring & Persistence** | `section-9/start` · `section-9/solution` | Refactoring from in-memory to PostgreSQL with Flyway migrations. Acceptance tests, persistence adapters, and JPA entities. |
 
@@ -78,9 +97,11 @@ git stash pop
 
 ## Project Structure
 
-The project follows **hexagonal architecture** (ports and adapters). Dependencies flow inward — adapters depend on the application layer, which depends on the domain. The domain never imports Spring or JPA.
+The project follows **hexagonal architecture** (ports and adapters).
 
-```
+Dependencies flow inward: adapters depend on the application layer, which depends on the domain. The domain never imports Spring or JPA.
+
+```text
 src/main/java/com/serenitydojo/cashback_rewards/
 ├── domain/                          # Pure business logic — no frameworks
 │   ├── model/                       # Entities and value objects (Java records)
@@ -105,7 +126,7 @@ src/main/java/com/serenitydojo/cashback_rewards/
 
 Tests mirror the production structure and follow Maven naming conventions:
 
-```
+```text
 src/test/java/com/serenitydojo/cashback_rewards/
 ├── acceptance/                      # *IT.java — end-to-end, run with mvn verify
 │   ├── BasicCashbackCalculationIT.java
@@ -122,7 +143,9 @@ Run `./mvnw test` for unit tests only, or `./mvnw verify` for unit + acceptance 
 
 ## Specifications
 
-Feature specifications live in `doc/specs/` and follow the **Example Mapping** format: rules, examples, and counter-examples. These specs drive both the acceptance tests and the TDD implementation.
+Feature specifications live in `doc/specs/` and follow the **Example Mapping** format: rules, examples, and counter-examples.
+
+These specs drive both the acceptance tests and the TDD implementation.
 
 | Spec File | Feature |
 |---|---|
@@ -138,33 +161,43 @@ From Section 5 onwards, the project includes Claude Code configuration files tha
 
 ### CLAUDE.md
 
-The main instruction file at the project root. Contains build commands, coding conventions (BigDecimal for money, Java 25 features, constructor injection), the four-step development process (Discover → Accept → TDD → Review), testing standards, and architecture rules.
+The main instruction file at the project root.
+
+It contains build commands, coding conventions, the four-step development process, testing standards, and architecture rules.
+
+Examples include:
+
+- use `BigDecimal` for money
+- use Java 25 features where they make sense
+- prefer constructor injection
+- keep the domain model free from Spring and JPA
+- follow the `Discover → Acceptance → TDD → Review` workflow
 
 ### Rules (`.claude/rules/`)
 
-Path-scoped rules that activate automatically when Claude edits files in specific directories:
+Path-scoped rules activate automatically when Claude edits files in specific directories:
 
 | Rule File | Scope | Key Constraints |
 |---|---|---|
 | `domain-rules.md` | `src/**/domain/**` | No Spring imports, no JPA, pure Java only |
 | `persistence-rules.md` | `src/**/adapter/out/persistence/**` | JPA entities here only, implement outbound ports |
-| `test-rules.md` | `src/test/**` | Naming conventions (*Test vs *IT), never recalculate expected values |
-| `web-rules.md` | `src/**/adapter/in/web/**` | Thin controllers, DTOs only, @Valid on request bodies |
+| `test-rules.md` | `src/test/**` | Naming conventions (`*Test` vs `*IT`), never recalculate expected values |
+| `web-rules.md` | `src/**/adapter/in/web/**` | Thin controllers, DTOs only, `@Valid` on request bodies |
 
 ### Commands (`.claude/commands/`)
 
-Reusable prompts for the spec-driven development workflow:
+Reusable prompts for the AI-assisted development workflow:
 
 | Command | Model | Purpose |
 |---|---|---|
 | `/discover` | opus | Run Example Mapping to discover rules, examples, and questions from a user story |
-| `/accept` | sonnet | Write a failing acceptance test for the next spec rule |
+| `/acceptance` | sonnet | Write a failing acceptance test for the next spec rule |
 | `/tdd` | sonnet | Run one RED → GREEN → REFACTOR TDD cycle |
 | `/review` | opus | Architecture and code quality review of uncommitted changes |
 
 ### Hooks (`.claude/settings.json`)
 
-The project includes a PostToolUse hook that automatically runs `mvn test` after every file edit, ensuring Claude never moves forward with broken code.
+The project includes a `PostToolUse` hook that automatically runs `mvn test` after every file edit, ensuring Claude never moves forward with broken code.
 
 ## Architecture Decisions
 
@@ -179,29 +212,42 @@ The project includes a PostToolUse hook that automatically runs `mvn test` after
 ## Useful Commands
 
 ```bash
-./mvnw test                              # Unit tests only
-./mvnw verify                            # Unit + acceptance tests
+./mvnw test                               # Unit tests only
+./mvnw verify                             # Unit + acceptance tests
 ./mvnw -Dtest=CashbackCalculatorTest test # Single test class
-./mvnw spring-boot:run                   # Run the app (needs PostgreSQL)
-./mvnw clean package                     # Build the JAR
+./mvnw spring-boot:run                    # Run the app (needs PostgreSQL)
+./mvnw clean package                      # Build the JAR
 ```
 
 ### With Claude Code
 
 ```bash
-claude                                   # Start a Claude Code session
-/discover "As a customer, I want..."     # Run Example Mapping on a user story
-/accept Rule1 @doc/specs/feature.md      # Write an acceptance test for a spec rule
-/tdd ClassName#methodName                # Run one TDD cycle
-/review                                  # Review uncommitted changes
+claude                                      # Start a Claude Code session
+/discover "As a customer, I want..."        # Run Example Mapping on a user story
+/acceptance Rule1 @doc/specs/feature.md     # Write an acceptance test for a spec rule
+/tdd ClassName#methodName                   # Run one TDD cycle
+/review                                     # Review uncommitted changes
 ```
 
 ---
 
 ## About the Course
 
-**[Spec-Driven Development and TDD with AI](https://bit.ly/spec-driven-development-in-java)** teaches you to build production-ready Spring Boot APIs using Claude Code as your AI pair programmer. You'll learn a complete workflow: discover requirements with Example Mapping, write specifications, generate tests, and build features using TDD — all with AI assistance that's configured to follow your project's architecture and conventions.
+This repository is the hands-on project for **[Spec-Driven Development and TDD with AI](https://bit.ly/spec-driven-development-in-java)**.
+
+In the course, we build the cashback rewards API step by step using Claude Code as an AI pair programmer — but not just as a code generator.
+
+The workflow is:
+
+- discover requirements with Example Mapping
+- write precise feature specifications
+- generate acceptance tests from the specs
+- implement with TDD
+- keep the code aligned with hexagonal architecture
+- use Claude Code commands, rules, and hooks to make the process repeatable
+
+The goal is to show how to use AI in a disciplined development workflow, where tests, examples, and architecture rules keep the AI constrained.
 
 The course is designed for Java developers who want to use AI effectively — not as a code generator, but as a disciplined development partner.
 
-**[Enrol on Udemy →](https://bit.ly/spec-driven-development-in-java)** · Built by [Serenity Dojo](https://www.serenity-dojo.com/)
+**[Enrol in the course on Udemy →](https://bit.ly/spec-driven-development-in-java)** · Built by [Serenity Dojo](https://www.serenity-dojo.com/)
