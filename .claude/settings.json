@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [{
+      "matcher": "write|edit",
+      "hooks": [{
+        "type": "command",
+        "command": "mvn test -q 2>&1 | tail -20"
+      }],
+      "Stop": [{
+        "type": "command",
+        "command": "mvn verify -q 2>&1 | tail -20"
+      }]
+    }]
+  }
+}
