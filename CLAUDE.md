@@ -36,74 +36,28 @@ so the same Flyway migrations and JPA mappings are exercised without Docker. The
 rules call for Testcontainers + real PostgreSQL; switch the test datasource over once a Docker
 daemon is available.
 
-## Coding Conventions
+## Conventions & Architecture
 
-### Money
-BigDecimal for ALL monetary values. NEVER float, double, or int.
-Always explicit RoundingMode. Cashback: RoundingMode.DOWN, scale 2.
-BigDecimal.valueOf() or new BigDecimal("...") — NEVER new BigDecimal(double).
+Layer-specific conventions live in `.claude/rules/` and load automatically when you edit a
+matching file — see the money (BigDecimal), domain, web, persistence and test rules. Those files
+are the source of truth for coding conventions; keep them updated, not this file.
 
-### Java 25
-Records for value objects, sealed interfaces, pattern matching.
-No Lombok — records replace it.
+Hexagonal (Ports & Adapters). Dependencies flow inward: adapter → application → domain.
 
-### REST & Spring
-Constructor injection only (no field @Autowired).
-@Valid on request bodies. 201 create, 200 query, 400 validation, 404 not found.
-Domain exceptions for business rule violations. Map to HTTP in controller only.
-Never swallow exceptions or leak infrastructure details.
-
-## Project Structure
-
-domain/ — business logic, models, ports. No Spring imports.
-application/ — use-case orchestration.
-adapter/in/web/ — REST controllers (Spring MVC).
-adapter/out/persistence/ — JPA repositories and entities.
-
-NEVER import adapter classes from domain.
+- `domain/` — pure-Java business logic, models, ports. No Spring, no `jakarta.persistence`.
+- `application/` — `@Service` use-case orchestration only; `port/in` and `port/out` interfaces.
+- `adapter/in/web/` — thin `@RestController` + DTOs.
+- `adapter/out/persistence/` — JPA repositories and entities (never imported by domain).
 
 ## Development Process
 
-Follow these steps for every feature. Do NOT skip steps.
+Follow these steps for every feature; do NOT skip steps. Each step is a skill — invoke it.
 
-Step 1: Discovery — Run /discover.
-Propose rules, surface questions with options, let the user decide.
-Save draft spec to docs/specs/.
-STOP. User reviews, edits, and annotates the spec.
-Do NOT proceed if the spec has unresolved questions.
-Re-read the final spec before continuing.
-
-Step 2: Acceptance Test — Write test for the NEXT rule only.
-@Nested = rule, test = example. @SpringBootTest + MockMvc.
-Complete Step 3 until this rule is GREEN before writing the next.
-
-Step 3: TDD (Inner Loop) — RED → GREEN → REFACTOR.
-Write ONE failing test. Minimum code to pass. Refactor.
-Run ALL tests. STOP after each cycle.
-
-Step 4: Review — Verify coverage, boundaries, no AI smells.
-Update CLAUDE.md if new conventions emerged.
-
-## Testing Standards
-
-Acceptance tests live in .../acceptance/, unit tests beside their production code.
-Domain tests: plain JUnit + AssertJ, NO Spring.
-Repository tests: @DataJpaTest.
-Web tests: @WebMvcTest.
-Acceptance tests: @SpringBootTest + MockMvc.
-For money: isEqualByComparingTo("1.60").
-Inline test data per test. No shared fixtures.
-
-## Architecture: Hexagonal (Ports & Adapters)
-Domain (domain/): Pure Java. NO Spring, NO framework dependencies.
-    model/ — entities and value objects
-    service/ — business rules
-Application (application/): port/in/ and port/out/ interfaces.
-    @Service orchestration only — no business logic here.
-Adapters: 
-    adapter/in/web/ — @RestController, DTOs only.
-    adapter/out/persistence/ — JPA repos and entities (NOT in domain).
-
-Domain NEVER imports org.springframework or jakarta.persistence.
-Controllers NEVER contain business logic.
-Dependencies flow inward: adapter → application → domain.
+1. **Discovery** — `/discover`. Propose rules, resolve open questions interactively, save a draft
+   spec to `doc/specs/`. STOP for user review; do not proceed with unresolved questions, and
+   re-read the final spec before continuing.
+2. **Acceptance test** — `/accept`. One failing acceptance test for the NEXT rule only; keep it
+   red until Step 3 turns it green, then move to the next rule.
+3. **TDD inner loop** — `/tdd`. RED → GREEN → REFACTOR, one cycle, run all tests, then STOP.
+4. **Review** — `/review`. Verify coverage and boundaries, no AI smells. Update the rule files
+   above if new conventions emerged.
