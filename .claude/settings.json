@@ -1,5 +1,20 @@
 {
   "hooks": {
+    "SessionStart": [{
+      "matcher": "startup",
+      "hooks": [{
+        "type": "command",
+        "command": "date +%s > .claude/.session-start-time && bash .claude/hooks/session-start.sh"
+      }]
+    }],
+    "SessionEnd": [{
+      "hooks": [
+        {
+          "type": "command",
+          "command": "bash .claude/hooks/session-end.sh"
+        }
+      ]
+    }],
     "PostToolUse": [{
       "matcher": "write|edit",
       "hooks": [{
