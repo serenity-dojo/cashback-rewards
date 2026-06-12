@@ -1,26 +1,25 @@
 {
   "hooks": {
-    "SessionStart": [{
-      "matcher": "startup",
-      "hooks": [{
-        "type": "command",
-        "command": "date +%s > .claude/.session-start-time && bash .claude/hooks/session-start.sh"
-      }]
-    }],
-    "SessionEnd": [{
-      "hooks": [
-        {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [{
           "type": "command",
-          "command": "bash .claude/hooks/session-end.sh"
-        }
-      ]
-    }],
-    "PostToolUse": [{
-      "matcher": "write|edit",
-      "hooks": [{
-        "type": "command",
-        "command": "mvn test -q 2>&1 | tail -20"
-      }]
-    }]
+          "command": "bash .claude/hooks/session-start.sh"
+        }]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "bash .claude/hooks/tool-guard.sh"
+        }]
+      }
+    ],
+    "Stop": [{ "hooks": [{
+      "type": "command",
+      "command": "bash .claude/hooks/stop-gate.sh"
+    }]}]
   }
 }
