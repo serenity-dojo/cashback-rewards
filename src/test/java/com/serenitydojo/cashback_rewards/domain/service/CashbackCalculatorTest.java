@@ -19,4 +19,24 @@ class CashbackCalculatorTest {
 
         assertThat(cashback).isEqualByComparingTo("2.40");
     }
+
+    @Test
+    @DisplayName("rounds a half-cent tie to the nearest even cent (banker's rounding)")
+    void roundsHalfCentTieToNearestEvenCent() {
+        BigDecimal cashback = CashbackCalculator.calculate(
+                new BigDecimal("5.00"),
+                new BigDecimal("0.005"));
+
+        assertThat(cashback).isEqualByComparingTo("0.02");
+    }
+
+    @Test
+    @DisplayName("rounds an above-half cashback up using banker's rounding (half-even)")
+    void roundsAboveHalfCashbackUp() {
+        BigDecimal cashback = CashbackCalculator.calculate(
+                new BigDecimal("166.51"),
+                new BigDecimal("0.01"));
+
+        assertThat(cashback).isEqualByComparingTo("1.67");
+    }
 }

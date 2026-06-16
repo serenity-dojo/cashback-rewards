@@ -40,7 +40,7 @@ daemon is available.
 
 ### Money
 BigDecimal for ALL monetary values. NEVER float, double, or int.
-Always explicit RoundingMode. Cashback: RoundingMode.DOWN, scale 2.
+Always explicit RoundingMode. Cashback: RoundingMode.HALF_EVEN, scale 2.
 BigDecimal.valueOf() or new BigDecimal("...") — NEVER new BigDecimal(double).
 
 ### Java 25

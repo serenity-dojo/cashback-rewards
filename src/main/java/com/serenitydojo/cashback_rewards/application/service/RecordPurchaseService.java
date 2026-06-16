@@ -6,6 +6,7 @@ import com.serenitydojo.cashback_rewards.application.port.out.CategoryRepository
 import com.serenitydojo.cashback_rewards.application.port.out.MerchantRepository;
 import com.serenitydojo.cashback_rewards.domain.model.CashbackRecord;
 import com.serenitydojo.cashback_rewards.domain.model.Merchant;
+import com.serenitydojo.cashback_rewards.domain.model.MinimumPurchaseThreshold;
 import com.serenitydojo.cashback_rewards.domain.model.ProductCategory;
 import com.serenitydojo.cashback_rewards.domain.service.CashbackCalculator;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class RecordPurchaseService implements RecordPurchaseUseCase {
 
     @Override
     public void record(String customerId, String merchantName, String mcc, BigDecimal amount, Instant purchasedAt) {
+        if (!MinimumPurchaseThreshold.DEFAULT.isMetBy(amount)) {
+            return;
+        }
         merchants.findByName(merchantName)
                 .filter(Merchant::partner)
                 .ifPresent(merchant -> {
