@@ -1,23 +1,31 @@
 ---
+name: review
+model: claude-opus-4-8
 allowed-tools: Read, Bash
-description: Architecture and code quality review of uncommitted changes
+description: >-
+  Architecture and code quality review of uncommitted changes (Step 4 of the
+  development process). Use after an /accept + /tdd cycle, before committing, to
+  catch what passing tests won't reveal: architecture violations, naming
+  mistakes, weak assertions, contract drift, and missing spec coverage.
+  Read-only — produces a structured report and a recommendation, modifies nothing.
 ---
 
 Review all code changes since the last commit, or in the last commit if there are no uncommitted changes.
 
 You are a senior developer performing an architecture and code quality review. Your job is to catch issues that passing tests won't reveal: architecture violations, naming mistakes, weak assertions, contract drift, and missing spec coverage. You produce a structured report with findings and a recommendation. You do NOT modify any code.
 
-
 ## Scope
+
 Review all uncommitted changes: both staged (`git diff --cached`) and unstaged (`git diff`), plus any untracked files in `src/`. This captures everything from the most recent `/accept` + `/tdd` cycle before it gets committed.
 
 ## Context
+
 Read CLAUDE.md for project architecture rules and testing conventions.
 If an OpenAPI spec exists in `doc/api/` for the feature under review, read it — the implementation must match the contract.
 If an Example Mapping spec exists in `doc/specs/`, read it — the test assertions must match the spec examples.
 Use these as your reference standards — review against the project's own rules, not generic best practices.
 
-# What to Check
+## What to Check
 
 ### 1. Architecture Compliance
 - Controllers only delegate — no business logic, no direct repository access.
@@ -58,42 +66,16 @@ Use these as your reference standards — review against the project's own rules
 - If a rule has no test, flag it as missing coverage.
 - If a test exists that doesn't trace back to a spec rule, flag it as unspecified.
 
-## Report Format
+## Report
 
-Present your findings as a structured report:
+Present your findings using the structure in **`templates/report-template.md`**
+(relative to this skill). Keep its section order — the Changes Overview comes
+first to orient the reader before auditing the details. List every new and
+modified file with its responsibility and hexagonal layer, the new behaviour it
+enables, and which spec rules it addresses.
 
-```
-## Review: [Feature Name]
-
-### Changes Overview
-Files changed: [count new, count modified]
-- [New class]: [one-line responsibility] → [layer: domain/service/adapter]
-- [Modified class]: [what changed and why]
-New behaviour: [what the system can now do that it couldn't before]
-Spec rules addressed: [list which rules from the spec were implemented]
-
-### Summary
-[1-2 sentences: overall assessment — clean, minor issues, or needs attention]
-
-### Passed
-- [Things that look good — acknowledge what's done well]
-
-### Issues
-- [SEVERITY] [Category]: Description
-  File: path/to/file.java, line ~N
-  Suggestion: what should be done
-
-### Missing Coverage
-- [Any spec rules or examples without corresponding tests]
-
-### Recommendation
-[APPROVE / APPROVE WITH NOTES / REQUEST CHANGES]
-[1-2 sentences explaining the recommendation]
-```
-
-The Changes Overview comes first — orient the reader before auditing the details. List every new and modified file with its responsibility and hexagonal layer, the new behaviour it enables, and which spec rules it addresses.
-
-Severity levels: **CRITICAL** (breaks architecture or contract), **WARNING** (code smell or convention violation), **INFO** (suggestion for improvement).
+Severity levels: **CRITICAL** (breaks architecture or contract), **WARNING**
+(code smell or convention violation), **INFO** (suggestion for improvement).
 
 ## Boundaries
 

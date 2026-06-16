@@ -57,7 +57,7 @@ Sections 1–3 are theory and slides — no code branches needed. Hands-on codin
 | **Section 4 — AI-Driven Requirements Discovery** | `section-4/start` · `section-4/solution` | The custom `/discover` command. Using Example Mapping with AI to write feature specifications. |
 | **Section 5 — The CLAUDE.md File** | `section-5/start` · `section-5/solution` | The CLAUDE.md instruction file. Build commands, coding conventions, architecture rules, and the development process. |
 | **Section 6 — Automating Architecture Rules** | `section-6/start` · `section-6/solution` | Path-scoped rules in `.claude/rules/`. Domain rules, persistence rules, test rules, and web rules. |
-| **Section 7 — TDD with AI** | `section-7/start` · `section-7/solution` | The `/accept`, `/tdd`, and `/review` commands. Full TDD cycle: acceptance tests, inner-loop red-green-refactor, and code review. |
+| **Section 7 — TDD with AI** | `section-7/start` · `section-7/solution` | The `/accept`, `/tdd`, and `/review` skills. Full TDD cycle: acceptance tests, inner-loop red-green-refactor, and code review. |
 | **Section 8 — API Contracts** | `section-8/start` · `section-8/solution` | OpenAPI contract-driven development. Defining the API contract first, then implementing against it. |
 | **Section 9 — Refactoring & Persistence** | `section-9/start` · `section-9/solution` | Refactoring from in-memory to PostgreSQL with Flyway migrations. Acceptance tests, persistence adapters, and JPA entities. |
 
@@ -151,11 +151,13 @@ Path-scoped rules that activate automatically when Claude edits files in specifi
 | `test-rules.md` | `src/test/**` | Naming conventions (*Test vs *IT), never recalculate expected values |
 | `web-rules.md` | `src/**/adapter/in/web/**` | Thin controllers, DTOs only, @Valid on request bodies |
 
-### Commands (`.claude/commands/`)
+### Skills (`.claude/skills/`)
 
-Reusable prompts for the spec-driven development workflow:
+Reusable, model-invocable skills for the spec-driven development workflow. Each
+lives in its own directory as a `SKILL.md` (with supporting `references/` and
+`templates/`) and can be invoked explicitly with `/<name>`:
 
-| Command | Model | Purpose |
+| Skill | Model | Purpose |
 |---|---|---|
 | `/discover` | opus | Run Example Mapping to discover rules, examples, and questions from a user story |
 | `/accept` | sonnet | Write a failing acceptance test for the next spec rule |
