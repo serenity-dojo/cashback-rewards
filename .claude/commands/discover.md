@@ -1,5 +1,4 @@
 ---
-model: claude-opus-4-6
 allowed-tools: Write
 description: Discover feature rules from a user story using Example Mapping
 argument-hint: "<user story in quotes>"

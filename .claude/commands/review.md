@@ -1,5 +1,4 @@
 ---
-model: claude-opus-4-7
 allowed-tools: Read, Bash
 description: Architecture and code quality review of uncommitted changes
 ---

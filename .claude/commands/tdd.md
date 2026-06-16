@@ -1,5 +1,4 @@
 ---
-model: claude-sonnet-4.6
 description: Run one TDD cycle (RED → GREEN → REFACTOR → CHALLENGE → STOP)
 argument-hint: "<test class or method to drive>"
 ---
