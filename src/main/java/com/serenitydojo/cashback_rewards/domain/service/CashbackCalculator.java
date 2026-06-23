@@ -9,6 +9,7 @@ public final class CashbackCalculator {
     }
 
     public static BigDecimal calculate(BigDecimal purchaseAmount, BigDecimal cashbackRate) {
-        return purchaseAmount.multiply(cashbackRate).setScale(2, RoundingMode.HALF_EVEN);
+        return purchaseAmount.multiply(cashbackRate)
+                .setScale(2, RoundingMode.HALF_EVEN);
     }
 }
