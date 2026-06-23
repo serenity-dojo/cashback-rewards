@@ -50,7 +50,7 @@ If the tests pass, you're ready to go.
 
 Each course section has a **start** branch (where you begin working) and a **solution** branch (the completed code). Check out the start branch, follow along with the videos, and compare your work against the solution when you're done.
 
-Sections 1–3 are theory and slides — no code branches needed. Hands-on coding starts at Section 4.
+Sections 1–3 and Section 10 (How To Write Effective Prompts in Claude Code) are theory and slides — no code branches needed. Hands-on coding starts at Section 4.
 
 | Course Section | Branches | What's Introduced |
 |---|---|---|
@@ -60,6 +60,9 @@ Sections 1–3 are theory and slides — no code branches needed. Hands-on codin
 | **Section 7 — TDD with AI** | `section-7/start` · `section-7/solution` | The `/accept`, `/tdd`, and `/review` skills. Full TDD cycle: acceptance tests, inner-loop red-green-refactor, and code review. |
 | **Section 8 — API Contracts** | `section-8/start` · `section-8/solution` | OpenAPI contract-driven development. Defining the API contract first, then implementing against it. |
 | **Section 9 — Refactoring & Persistence** | `section-9/start` · `section-9/solution` | Refactoring from in-memory to PostgreSQL with Flyway migrations. Acceptance tests, persistence adapters, and JPA entities. |
+| **Section 11 — Hooks** | `section-11/start` · `section-11/solution` | Claude Code hooks in `.claude/hooks/` and `settings.json` — file-protection, session-start, and stop-gate hooks that enforce the workflow automatically. Adds a minimum-purchase-threshold feature. |
+| **Section 12 — From Commands to Skills** | `section-12/start` · `section-12/solution` | Migrating `.claude/commands/` to model-invocable Skills (`.claude/skills/<name>/SKILL.md`) with references and templates. Adds the `/commit-summary` skill. |
+| **Section 13 — Subagents & Mutation Testing** | `section-13/start` · `section-13/solution` | Custom subagents in `.claude/agents/` (architecture-guardian, mutation-analyst, spec-compliance) and a `/quality-check` pipeline. Adds PIT mutation testing to the build. |
 
 ### How to switch branches
 
