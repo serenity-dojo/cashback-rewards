@@ -18,9 +18,14 @@
         }]
       }
     ],
-    "Stop": [{ "hooks": [{
-      "type": "command",
-      "command": "bash .claude/hooks/stop-gate.sh"
-    }]}]
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{
+          "type": "command",
+          "command": "bash .claude/hooks/test-coach.sh"
+        }]
+      }
+    ]
   }
 }
