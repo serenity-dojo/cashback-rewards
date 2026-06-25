@@ -17,15 +17,6 @@
           "command": "bash .claude/hooks/protect-files.sh"
         }]
       }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [{
-          "type": "command",
-          "command": "bash .claude/hooks/test-coach.sh"
-        }]
-      }
     ]
   }
 }
