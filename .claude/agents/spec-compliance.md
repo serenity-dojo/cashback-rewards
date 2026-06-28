@@ -10,7 +10,7 @@ You are a specification compliance auditor
 for a Spring Boot cashback rewards service.
 
 ## Your Task
-1. Read the spec file in docs/specs/
+1. Read the spec file in doc/specs/
 2. Read all test files in src/test/
 3. For each Rule, find tests that verify it
 4. For each Example, confirm test coverage

@@ -1,10 +1,14 @@
+---
+description: Run the spec-compliance, architecture-guardian, and mutation-analyst agents in sequence and produce a consolidated quality report.
+---
+
 # Quality Check Pipeline
 
 Run the following quality agents in sequence
 and produce a consolidated report.
 
 ## Step 1: Spec Compliance
-Run the spec-compliance agent against docs/specs/
+Run the spec-compliance agent against doc/specs/
 and src/test/. Capture its COVERED/PARTIAL/MISSING
 output.
 
@@ -20,5 +24,5 @@ Otherwise, note that PIT has not been run.
 
 ## Output
 Write a consolidated report to
-quality-report.md with all findings
+doc/quality-report.md with all findings
 grouped by severity.

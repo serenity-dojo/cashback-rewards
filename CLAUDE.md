@@ -6,35 +6,20 @@ SpringBoot microservice implementing a Cashback Rewards solution.
 
 ## Build & Run
 
-Uses the Maven wrapper; Java 25 required (see `pom.xml` `<java.version>`).
+Maven wrapper (`./mvnw`, not `mvn`); Java 25 required (see `pom.xml`).
 
-```bash
-./mvnw spring-boot:run           # run the app (needs a PostgreSQL instance — see below)
-./mvnw test                      # run unit tests (use H2 in PostgreSQL mode)
-./mvnw verify                    # run unit + acceptance (*IT) tests
-./mvnw -Dtest=ClassName test     # run a single test class
-./mvnw -Dtest=ClassName#method test   # run a single test method
-./mvnw clean package             # build the jar
-```
+- `./mvnw test` — unit tests (H2 in PostgreSQL mode, no Docker needed).
+- `./mvnw verify` — unit + acceptance (`*IT`) tests.
+- `./mvnw -Dtest=ClassName#method test` — single test class/method.
+- `./mvnw spring-boot:run` — needs a running PostgreSQL (see Database below).
 
 Stack: `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`, Flyway, PostgreSQL driver (runtime), H2 (test).
 
 ### Database
 Production persistence is PostgreSQL. The schema is owned by Flyway migrations in
 `src/main/resources/db/migration` (`V<n>__description.sql`); Hibernate is `ddl-auto: validate`
-and never generates schema. Connection is configured in `src/main/resources/application.yaml`
-and overridable via `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` env vars.
-
-To run locally, start a PostgreSQL instance, e.g.:
-```bash
-docker run --name cashback-pg -e POSTGRES_DB=cashback_rewards \
-  -e POSTGRES_USER=cashback -e POSTGRES_PASSWORD=cashback -p 5432:5432 -d postgres:17
-```
-
-Tests run against H2 in PostgreSQL compatibility mode (`src/test/resources/application.yaml`),
-so the same Flyway migrations and JPA mappings are exercised without Docker. The persistence
-rules call for Testcontainers + real PostgreSQL; switch the test datasource over once a Docker
-daemon is available.
+and never generates schema. Connection is in `src/main/resources/application.yaml`,
+overridable via `DB_URL` / `DB_USERNAME` / `DB_PASSWORD`. (Local-run setup is in the README.)
 
 ## Coding Conventions
 
@@ -53,36 +38,15 @@ Constructor injection only (no field @Autowired).
 Domain exceptions for business rule violations. Map to HTTP in controller only.
 Never swallow exceptions or leak infrastructure details.
 
-## Project Structure
-
-domain/ — business logic, models, ports. No Spring imports.
-application/ — use-case orchestration.
-adapter/in/web/ — REST controllers (Spring MVC).
-adapter/out/persistence/ — JPA repositories and entities.
-
-NEVER import adapter classes from domain.
-
 ## Development Process
 
-Follow these steps for every feature. Do NOT skip steps.
+One feature at a time, in order, no steps skipped. Each skill owns the
+detailed method and stop conditions — do not inline them here.
 
-Step 1: Discovery — Run /discover.
-Propose rules, surface questions with options, let the user decide.
-Save draft spec to docs/specs/.
-STOP. User reviews, edits, and annotates the spec.
-Do NOT proceed if the spec has unresolved questions.
-Re-read the final spec before continuing.
-
-Step 2: Acceptance Test — Write test for the NEXT rule only.
-@Nested = rule, test = example. @SpringBootTest + MockMvc.
-Complete Step 3 until this rule is GREEN before writing the next.
-
-Step 3: TDD (Inner Loop) — RED → GREEN → REFACTOR.
-Write ONE failing test. Minimum code to pass. Refactor.
-Run ALL tests. STOP after each cycle.
-
-Step 4: Review — Verify coverage, boundaries, no AI smells.
-Update CLAUDE.md if new conventions emerged.
+1. Discovery: use the `discover` skill. Save the spec to doc/specs/, then STOP for user review.
+2. Acceptance test: use the `accept` skill for the NEXT rule only.
+3. TDD inner loop: use the `tdd` skill, one cycle per invocation.
+4. Review: use the `review` skill before committing.
 
 ## Testing Standards
 

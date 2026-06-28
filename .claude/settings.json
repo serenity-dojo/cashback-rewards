@@ -1,4 +1,29 @@
 {
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Read(./**/*.p12)",
+      "Read(./**/*.jks)",
+      "Read(./**/*.keystore)",
+      "Read(./**/*.truststore)",
+      "Edit(./.claude/**)",
+      "Write(./.claude/**)",
+      "Edit(./.git/**)",
+      "Write(./.git/**)",
+      "Edit(./.github/workflows/**)",
+      "Write(./.github/workflows/**)",
+      "Edit(./mvnw)",
+      "Write(./mvnw)",
+      "Edit(./.mvn/**)",
+      "Write(./.mvn/**)",
+      "Edit(./**/application-prod*)",
+      "Write(./**/application-prod*)",
+      "Edit(./**/application-secrets*)",
+      "Write(./**/application-secrets*)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -11,7 +36,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "Edit|Write",
+        "matcher": "Edit|Write|Bash",
         "hooks": [{
           "type": "command",
           "command": "bash .claude/hooks/protect-files.sh"
