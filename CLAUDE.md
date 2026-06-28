@@ -6,58 +6,68 @@ SpringBoot microservice implementing a Cashback Rewards solution.
 
 ## Build & Run
 
-Uses the Maven wrapper; Java 25 required (see `pom.xml` `<java.version>`).
+Maven wrapper (`./mvnw`, not `mvn`); Java 25 required (see `pom.xml`).
 
-```bash
-./mvnw spring-boot:run           # run the app (needs a PostgreSQL instance — see below)
-./mvnw test                      # run unit tests (use H2 in PostgreSQL mode)
-./mvnw verify                    # run unit + acceptance (*IT) tests
-./mvnw -Dtest=ClassName test     # run a single test class
-./mvnw -Dtest=ClassName#method test   # run a single test method
-./mvnw clean package             # build the jar
-```
+- `./mvnw test` — unit tests (H2 in PostgreSQL mode, no Docker needed).
+- `./mvnw verify` — unit + acceptance (`*IT`) tests.
+- `./mvnw -Dtest=ClassName#method test` — single test class/method.
+- `./mvnw spring-boot:run` — needs a running PostgreSQL (see Database below).
 
 Stack: `spring-boot-starter-web`, `spring-boot-starter-data-jpa`, `spring-boot-starter-validation`, Flyway, PostgreSQL driver (runtime), H2 (test).
 
 ### Database
 Production persistence is PostgreSQL. The schema is owned by Flyway migrations in
 `src/main/resources/db/migration` (`V<n>__description.sql`); Hibernate is `ddl-auto: validate`
-and never generates schema. Connection is configured in `src/main/resources/application.yaml`
-and overridable via `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` env vars.
+and never generates schema. Connection is in `src/main/resources/application.yaml`,
+overridable via `DB_URL` / `DB_USERNAME` / `DB_PASSWORD`. (Local-run setup is in the README.)
 
-To run locally, start a PostgreSQL instance, e.g.:
-```bash
-docker run --name cashback-pg -e POSTGRES_DB=cashback_rewards \
-  -e POSTGRES_USER=cashback -e POSTGRES_PASSWORD=cashback -p 5432:5432 -d postgres:17
-```
+## Coding Conventions
 
-Tests run against H2 in PostgreSQL compatibility mode (`src/test/resources/application.yaml`),
-so the same Flyway migrations and JPA mappings are exercised without Docker. The persistence
-rules call for Testcontainers + real PostgreSQL; switch the test datasource over once a Docker
-daemon is available.
+### Money
+BigDecimal for ALL monetary values. NEVER float, double, or int.
+Always explicit RoundingMode. Cashback: RoundingMode.HALF_EVEN, scale 2.
+BigDecimal.valueOf() or new BigDecimal("...") — NEVER new BigDecimal(double).
 
-## Conventions & Architecture
+### Java 25
+Records for value objects, sealed interfaces, pattern matching.
+No Lombok — records replace it.
 
-Layer-specific conventions live in `.claude/rules/` and load automatically when you edit a
-matching file — see the money (BigDecimal), domain, web, persistence and test rules. Those files
-are the source of truth for coding conventions; keep them updated, not this file.
-
-Hexagonal (Ports & Adapters). Dependencies flow inward: adapter → application → domain.
-
-- `domain/` — pure-Java business logic, models, ports. No Spring, no `jakarta.persistence`.
-- `application/` — `@Service` use-case orchestration only; `port/in` and `port/out` interfaces.
-- `adapter/in/web/` — thin `@RestController` + DTOs.
-- `adapter/out/persistence/` — JPA repositories and entities (never imported by domain).
+### REST & Spring
+Constructor injection only (no field @Autowired).
+@Valid on request bodies. 201 create, 200 query, 400 validation, 404 not found.
+Domain exceptions for business rule violations. Map to HTTP in controller only.
+Never swallow exceptions or leak infrastructure details.
 
 ## Development Process
 
-Follow these steps for every feature; do NOT skip steps. Each step is a skill — invoke it.
+One feature at a time, in order, no steps skipped. Each skill owns the
+detailed method and stop conditions — do not inline them here.
 
-1. **Discovery** — `/discover`. Propose rules, resolve open questions interactively, save a draft
-   spec to `doc/specs/`. STOP for user review; do not proceed with unresolved questions, and
-   re-read the final spec before continuing.
-2. **Acceptance test** — `/accept`. One failing acceptance test for the NEXT rule only; keep it
-   red until Step 3 turns it green, then move to the next rule.
-3. **TDD inner loop** — `/tdd`. RED → GREEN → REFACTOR, one cycle, run all tests, then STOP.
-4. **Review** — `/review`. Verify coverage and boundaries, no AI smells. Update the rule files
-   above if new conventions emerged.
+1. Discovery: use the `discover` skill. Save the spec to doc/specs/, then STOP for user review.
+2. Acceptance test: use the `accept` skill for the NEXT rule only.
+3. TDD inner loop: use the `tdd` skill, one cycle per invocation.
+4. Review: use the `review` skill before committing.
+
+## Testing Standards
+
+Acceptance tests live in .../acceptance/, unit tests beside their production code.
+Domain tests: plain JUnit + AssertJ, NO Spring.
+Repository tests: @DataJpaTest.
+Web tests: @WebMvcTest.
+Acceptance tests: @SpringBootTest + MockMvc.
+For money: isEqualByComparingTo("1.60").
+Inline test data per test. No shared fixtures.
+
+## Architecture: Hexagonal (Ports & Adapters)
+Domain (domain/): Pure Java. NO Spring, NO framework dependencies.
+    model/ — entities and value objects
+    service/ — business rules
+Application (application/): port/in/ and port/out/ interfaces.
+    @Service orchestration only — no business logic here.
+Adapters: 
+    adapter/in/web/ — @RestController, DTOs only.
+    adapter/out/persistence/ — JPA repos and entities (NOT in domain).
+
+Domain NEVER imports org.springframework or jakarta.persistence.
+Controllers NEVER contain business logic.
+Dependencies flow inward: adapter → application → domain.

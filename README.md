@@ -191,6 +191,19 @@ The project includes a PostToolUse hook that automatically runs `mvn test` after
 ./mvnw clean package                     # Build the JAR
 ```
 
+### Running locally with PostgreSQL
+
+`spring-boot:run` needs a PostgreSQL instance. The connection is configured in
+`src/main/resources/application.yaml` and overridable via `DB_URL` / `DB_USERNAME` /
+`DB_PASSWORD`. To start one with Docker:
+
+```bash
+docker run --name cashback-pg -e POSTGRES_DB=cashback_rewards \
+  -e POSTGRES_USER=cashback -e POSTGRES_PASSWORD=cashback -p 5432:5432 -d postgres:17
+```
+
+Tests don't need this — they run against H2 in PostgreSQL compatibility mode.
+
 ### With Claude Code
 
 ```bash
