@@ -10,6 +10,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -31,7 +32,8 @@ class CashbackControllerTest {
     @DisplayName("GET /api/customers/{customerId}/cashback returns the customer's cashback records as JSON")
     void returnsCustomerCashbackAsJson() throws Exception {
         when(listCashback.listFor("cust-001")).thenReturn(List.of(
-                new CashbackRecord("cust-001", "GreenGrocer", "Groceries", new BigDecimal("2.40"))));
+                new CashbackRecord("cust-001", "GreenGrocer", "Groceries", new BigDecimal("2.40"),
+                        Instant.parse("2026-05-01T10:00:00Z"))));
 
         mockMvc.perform(get("/api/customers/{customerId}/cashback", "cust-001"))
                 .andExpect(status().isOk())

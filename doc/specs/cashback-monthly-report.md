@@ -11,7 +11,7 @@ so that I can understand and trust how my rewards are calculated.
 
 - **Example:** The one where a member requests their report for March 2026 — the report contains every cashback event with a posting date between 1 March 00:00 and 31 March 23:59 in the member's local timezone.
 
-- **Counter-example:** The one where a member in UTC+13 has a transaction that posts at 11pm local on 31 March (already 1 April UTC) — it appears in the March report, not April, because we use the member's local month (consistent with how the monthly cap is applied).
+- **Counter-example:** The one where a member in UTC-11 has a transaction that posts at 11pm local on 31 March (already 1 April UTC) — it appears in the March report, not April, because we use the member's local month (consistent with how the monthly cap is applied).
 
 - **Questions:**
   - Can a member request the *current* month-to-date, or only completed past months?

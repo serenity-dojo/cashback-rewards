@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 @Entity
 @Table(name = "cashback_record")
@@ -30,15 +31,20 @@ class CashbackRecordEntity {
     @Column(name = "cashback_amount", nullable = false, precision = 19, scale = 2)
     private BigDecimal cashbackAmount;
 
+    @Column(name = "posted_at", nullable = false)
+    private Instant postedAt;
+
     protected CashbackRecordEntity() {
         // required by JPA
     }
 
-    CashbackRecordEntity(String customerId, String merchantName, String productCategory, BigDecimal cashbackAmount) {
+    CashbackRecordEntity(String customerId, String merchantName, String productCategory,
+                         BigDecimal cashbackAmount, Instant postedAt) {
         this.customerId = customerId;
         this.merchantName = merchantName;
         this.productCategory = productCategory;
         this.cashbackAmount = cashbackAmount;
+        this.postedAt = postedAt;
     }
 
     String getCustomerId() {
@@ -55,5 +61,9 @@ class CashbackRecordEntity {
 
     BigDecimal getCashbackAmount() {
         return cashbackAmount;
+    }
+
+    Instant getPostedAt() {
+        return postedAt;
     }
 }

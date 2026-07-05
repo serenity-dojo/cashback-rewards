@@ -19,7 +19,8 @@ class JpaCashbackRepository implements CashbackRepository {
     @Override
     public void save(CashbackRecord record) {
         cashbacks.save(new CashbackRecordEntity(
-                record.customerId(), record.merchantName(), record.productCategory(), record.cashbackAmount()));
+                record.customerId(), record.merchantName(), record.productCategory(),
+                record.cashbackAmount(), record.postedAt()));
     }
 
     @Override
@@ -42,6 +43,6 @@ class JpaCashbackRepository implements CashbackRepository {
     private static CashbackRecord toDomain(CashbackRecordEntity entity) {
         return new CashbackRecord(
                 entity.getCustomerId(), entity.getMerchantName(),
-                entity.getProductCategory(), entity.getCashbackAmount());
+                entity.getProductCategory(), entity.getCashbackAmount(), entity.getPostedAt());
     }
 }

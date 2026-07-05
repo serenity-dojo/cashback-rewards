@@ -36,7 +36,7 @@ public class RecordPurchaseService implements RecordPurchaseUseCase {
                     ProductCategory category = categories.findByMcc(mcc)
                             .orElseGet(() -> ProductCategory.unmapped(mcc, categories.defaultRate()));
                     BigDecimal cashbackAmount = CashbackCalculator.calculate(amount, category.cashbackRate());
-                    cashbacks.save(new CashbackRecord(customerId, merchantName, category.name(), cashbackAmount));
+                    cashbacks.save(new CashbackRecord(customerId, merchantName, category.name(), cashbackAmount, purchasedAt));
                 });
     }
 }

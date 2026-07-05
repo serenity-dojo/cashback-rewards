@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,7 +17,8 @@ class ListCustomerCashbackServiceTest {
     @DisplayName("returns the cashback records previously stored for the customer")
     void returnsStoredCashbackRecordsForCustomer() {
         InMemoryCashbackRepository cashbacks = new InMemoryCashbackRepository();
-        CashbackRecord record = new CashbackRecord("cust-001", "GreenGrocer", "Groceries", new BigDecimal("2.40"));
+        CashbackRecord record = new CashbackRecord("cust-001", "GreenGrocer", "Groceries", new BigDecimal("2.40"),
+                Instant.parse("2026-05-01T10:00:00Z"));
         cashbacks.save(record);
         ListCustomerCashbackService service = new ListCustomerCashbackService(cashbacks);
 
